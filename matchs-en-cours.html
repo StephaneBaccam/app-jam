@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Matchs en cours - CS:TV</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+        <link rel="stylesheet" href="site.css">
+        <script src="site.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+        
+    </head>
+    <body>
+        <div id="navbar"></div>
+ 
+        <div class="header-card">
+            <div class="row">
+                <div class="col s10 m8 l6 offset-l3 offset-m2 offset-s1">
+                    <div class="card">
+                        <div class="card-content">
+                            <span id="match-card-header-title" class="card-title black-text center" style="font-size: 48px; font-weight: bold;">MATCHS EN COURS</span>
+                        </div>
+                        <div id="match-actions" class="card-action center"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- <div class="choix-tier">
+            <div class="row">
+                <div class="col s10 m8 l6 offset-l3 offset-m2 offset-s1">
+                    <div class="checkboxes-tier">
+                        <label>
+                            <input type="checkbox" />
+                            <span>Tier S</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" />
+                            <span>Tier A</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" />
+                            <span>Tier B</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" />
+                            <span>Tier C</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" />
+                            <span>Tier D</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
+        <div id="content-cards">
+            <!-- Matchs -->
+        </div>
+    </body>
+</html>
+
+<script>
+    window.onload = init;
+
+    async function init() {
+        //Fonction externe
+        navbar();
+        matchCardHeader();   
+
+
+        await fetch("http://127.0.0.1:8000/matches/running")
+            .then(response => response.json())
+            .then(data => { 
+                window.localStorage.setItem('running_matches', JSON.stringify(data));
+            })
+            .catch(error => console.log(error));
+
+        var allMatches = JSON.parse(window.localStorage.getItem("running_matches") || "[]");
+        console.log(allMatches);
+
+        var divContent = document.getElementById("content-cards");
+
+        //const options = { weekday: 'long', year: 'numeric', month: 'long', day: '2-digit' };
+
+        allMatches.forEach(element => {
+            if(element.begin_at !== null && element.serie.tier !== null && element.serie.name !== "" &&  element.serie.name !== null) {
+                var row = document.createElement("div");
+                row.className = "row";
+
+                var col = document.createElement("div");
+                col.className = "col s10 m8 l6 offset-l3 offset-m2 offset-s1";
+
+                var card = document.createElement("div");
+                card.className = "card";
+
+                var cardContent = document.createElement("div");
+                cardContent.className = "card-content";
+
+                var cardTitle = document.createElement("span");
+                cardTitle.className = "card-title center";
+                cardTitle.style = "font-weight: bold;";
+
+                var cardBody = document.createElement("p");
+                cardBody.className = "center";
+
+                var cardActions = document.createElement("div");
+                cardActions.className = "card-actions center";
+                
+                var twitchLink = document.createElement("a");
+                twitchLink.href= element.official_stream_url;
+
+                var twitchLogo = document.createElement("img");
+                twitchLogo.className = "logo-twitch";
+                twitchLogo.src = "assets/logo_twitch.png";
+                twitchLogo.alt = element.official_stream_url;
+
+                var date = new Date(element.begin_at);
+
+                var hours = date.getHours();
+                hours = ("0" + hours).slice(-2);
+
+                var minutes = date.getMinutes();
+                minutes = ("0" + minutes).slice(-2);
+
+                cardTitle.innerHTML = element.serie.name 
+                + " - " + 
+                date.toLocaleDateString("fr-FR") 
+                + " - " + 
+                hours
+                + ":" + 
+                minutes;
+
+                cardBody.innerHTML = element.name;
+
+
+                divContent.appendChild(row);
+                row.appendChild(col);
+                col.appendChild(card);
+                card.appendChild(cardContent);
+                card.appendChild(cardActions);
+                cardContent.appendChild(cardTitle);
+                cardContent.appendChild(cardBody);
+                cardActions.appendChild(twitchLink);
+                twitchLink.appendChild(twitchLogo);
+            }
+        });
+    }
+</script>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Calendrier des matchs e-Sport</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        <!-- <script type="text/javascript" data-main="GetDataFromApi.js" src="require.js"></script> -->
+    </head>
+    <body>
+        <button onclick="getData()">Récupération de data</button>
+    </body>
+    <div>
+        <span id="data"></span>
+    </div>
+</html>
+
+<script>
+    function getData() {
+        fetch("http://127.0.0.1:8000/matches/573256/games")
+        .then(response => response.json())
+        .then(data => { 
+            console.log(data)
+        })
+        .catch(error => console.log(error));
+    }
+</script>
+
